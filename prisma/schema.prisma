@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model category {
+  id                                 BigInt    @id @default(autoincrement())
+  created_at                         DateTime  @default(now()) @db.Timestamptz(6)
+  type                               String?
+  subtype                            String?
+  counter_counter_categoryTocategory counter[] @relation("counter_categoryTocategory")
+}
+
+model count {
+  id         BigInt    @id @default(autoincrement())
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  counter_id BigInt?
+  value      Int?      @default(0)
+  date       DateTime? @default(now()) @db.Timestamptz(6)
+  notes      String?
+  counter    counter?  @relation(fields: [counter_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model counter {
+  id                                  BigInt    @id @default(autoincrement())
+  created_at                          DateTime  @default(now()) @db.Timestamptz(6)
+  name                                String?
+  user_id                             BigInt?
+  category                            BigInt?
+  count                               count[]
+  category_counter_categoryTocategory category? @relation("counter_categoryTocategory", fields: [category], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user                                user?     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model user {
+  id         BigInt    @id @default(autoincrement())
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  clekr_id   String?
+  name       String?
+  counter    counter[]
+}
